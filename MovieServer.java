@@ -1,106 +1,125 @@
 package pa7;
-import java.net.InetAddress;
-import java.io.*;
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.net.ServerSocket;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MovieServer{
-    
-    public static void main(String[] args) 
-    {
-        System.out.println("Server Name:");
-        
-        Socket sSocket = null;
-        ArrayList<Movie> movies = new ArrayList<Movie>();
-        boolean websiteFound = false; 
-  
-        FileInputStream fin = null;
-        
-        try
-        {
-            fin = new FileInputStream("dns.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
-            String lineString = "";
-            String[] tokens = lineString.split(", ");
-            
-            while ((lineString = br.readLine()) != null) //Read file  
-            {
-              tokens = lineString.split(", ");
-              movies.add(new Movie(tokens[0], tokens[1]));
-            }
-        }
-        catch (IOException e) 
-        {
-         e.printStackTrace();
-        }
-        
-        try 
-        {    
-         ServerSocket serverSocket = new ServerSocket(8000);
-         System.out.println("Awaiting Connection");
-         sSocket = serverSocket.accept();
-         System.out.println("Connected to Client");
-         serverSocket.close();
-        } 
-        catch (IOException ex) 
-        {
-         System.out.println(ex.getMessage());
-        }
-  
-        try 
-        {    
-            BufferedReader br = new BufferedReader(new InputStreamReader(sSocket.getInputStream()));
-            PrintWriter out = new PrintWriter(sSocket.getOutputStream(), true);
-            String input;
+public class MovieServer {
 
-            while ((input = br.readLine()) != null) 
-            {
-                System.out.println("Client request: " + input);
+  public static void main(String[] args) {
+    System.out.println("Movie Server ...");
+    Socket sSocket = null;
+    try {
+      ServerSocket serverSocket = new ServerSocket(6000);
+      System.out.println("Waiting for connection.....");
+      sSocket = serverSocket.accept();
+      System.out.println("Connected to client");
+    } catch (IOException ex) {
+      System.out.println(ex.getMessage());
+    }
+    try {
+      BufferedReader br = new BufferedReader(new InputStreamReader(sSocket.getInputStream()));
+      PrintWriter out = new PrintWriter(sSocket.getOutputStream(), true);
 
-                for (Movie site: movies)
-                {
-                       if (site.getDomain().equals(input)) 
-                       {
-                         out.println(site.getIp());
-                         websiteFound = true;
-                       }
-                 }
-                if (!websiteFound)
-                {
-                    InetAddress newSite = InetAddress.getByName(input);
-                    out.println(newSite.getHostAddress());
-                    movies.add(new Movie(input, newSite.getHostAddress()));
+      String inputLine;
+      String outputLine = "";
+      int year = 0;
+      int numMovies = 0;
 
-                    FileOutputStream fout = null;
-                    PrintStream printOut;
-                       
-                        try
-                        {
-                         fout = new FileOutputStream("dns.txt");
-                         printOut = new PrintStream(fout);
-                         for (Movie site: movies) 
-                        {
-                             printOut.println(site.getDomain() + ", " + site.getIp());
-                        }
-                    } 
-                    catch (Exception e)
-                    {
-                        System.err.println ("Error writing to file");
-                    }
-                }
-                websiteFound = false; 
-            }
+      while ((inputLine = br.readLine()) != null) {
+        System.out.println("Client request: " + inputLine);
+        String[] request = inputLine.split(",");
+
+        year = request[0]
+        numMovies = request[1];
+
+        String movieJsonStr = fetchData(year);
+        Movie[] movies = new Movie[numMovies];
+        movies = parseData(movieJsonStr, numMovies);
+        for (Movie movie : movies) {
+          outputLine += movie;
         }
-        catch (IOException ex)
-        {
-         System.out.println(ex.getMessage());
-        } 
-    }  
+        System.out.println(outputLine);
+      }
+    } catch (IOException ex) {
+      System.out.println(ex.getMessage());
+    }
+  }
+
+  public static String fetchData(int year) {
+
+    HttpURLConnection conn = null;
+    BufferedReader reader = null;
+    String movieJsonStr = null;
+    // Contain the raw JSON response from MovieDatabase API
+    try {
+      // Construct a URL for the MovieDatabase query
+      String sUrl = "http://api.themoviedb.org/3/discover/movie?primary_release_year=" + year +
+      "&sort_by=vote_average.desc&api_key=78d7b7955fd40b3e2db8a133e18459a2";
+      URL url = new URL(sUrl);
+      // Setup connection to MovieDatabase
+      conn = (HttpURLConnection) url.openConnection();
+      conn.setRequestMethod("GET");
+      conn.connect();
+      InputStream inputStream = conn.getInputStream();
+      // Read the input stream
+      // Place input stream into a buffered reader
+      reader = new BufferedReader(new InputStreamReader(inputStream));
+      String line;
+      StringBuilder buffer = new StringBuilder();
+      while ((line = reader.readLine()) != null) {
+      buffer.append(line).append("\n");
+      }
+      movieJsonStr = buffer.toString();
+    } catch (IOException e) {
+      System.out.println(e.getMessage());
+    } finally {
+      if (conn != null) {
+        conn.disconnect();
+      }
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          System.out.println(e.getMessage());
+        }
+      }
+      System.out.println(forecastJsonStr);
+    }
+    return movieJsonStr;
+  }
+
+  public static Movie[] parseData(String movieJsonStr, int numMovies) {
+
+    Movie[] movies = new Movie[numMovies];
+    try {
+      JSONObject movieJson = new JSONObject(movieJsonStr);
+      JSONArray movieArray = movieJson.getJSONArray("results");
+
+      for (int i = 0; i < movieArray.length(); i++) {
+        String title, releaseDate, overview;
+        JSONObject movieObject = (JSONObject) movieArray.get(i);
+
+        title = movieObject.getString("title");
+        releaseDate = movieObject.getString("release_date");
+        overview = movieObject.getString("overview");
+
+        movies[i] = new Movie(title, releaseDate, overview);
+      }
+    } catch (JSONException e) {
+      System.out.println(e.getMessage());
+    }
+    return resultStrs;
+  }
 }

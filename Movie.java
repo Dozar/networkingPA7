@@ -2,9 +2,9 @@
 package pa7;
 
 public class Movie {
-    
+
     private String title, releaseDate, overview;
- 
+
     Movie(){
         title = "";
         releaseDate = "";
@@ -15,7 +15,7 @@ public class Movie {
         releaseDate = releaseDateInput;
         overview = overviewInput;
     }
-    
+
     String getTitle(){
         return title;
     }
@@ -26,6 +26,6 @@ public class Movie {
         return overview;
     }
     public String toString() {
-        return "Site address: " + getDomain() + ", " + getIp();
+        return "Title: " + getTitle() + "\nRelease Date: " getReleaseDate() + "\nOverview: " + getOverview();
     }
 }
