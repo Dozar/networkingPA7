@@ -18,7 +18,7 @@ public class MovieClient {
 			 InetAddress localAddress = InetAddress.getLocalHost();
 
 			 try {
-				 Socket clientSocket = new Socket(localAddress, 6000);
+				 Socket clientSocket = new Socket(localAddress, 9000);
 				 BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
@@ -32,17 +32,21 @@ public class MovieClient {
 							break;
 						}
 						out.println(inputLine);
-						
-						String response;
-						
-						while (true){
-							if (br.readLine() == null) break;
-							response += br.readLine();
-						}
-						
-						System.out.println("Server response: " + response);
-				}
 
+						String response = "", line = "";
+						while (true) {
+							line = br.readLine();
+							if (line == null) {
+								break;
+							}
+							response += line;
+							response += "\n";
+						}
+
+						System.out.println("Server response:\n\n" + response);
+					}
+				 scanner.close();
+				 clientSocket.close();
 			 } catch (IOException ex) {
 				 System.out.println(ex.getMessage());
 			 }

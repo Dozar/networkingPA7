@@ -19,10 +19,11 @@ public class MovieServer {
 	    System.out.println("Movie Server ...");
 	    Socket sSocket = null;
 	    try {
-	      ServerSocket serverSocket = new ServerSocket(6000);
+	      ServerSocket serverSocket = new ServerSocket(9000);
 	      System.out.println("Waiting for connection.....");
 	      sSocket = serverSocket.accept();
 	      System.out.println("Connected to client");
+	      serverSocket.close();
 	    } catch (IOException ex) {
 	      System.out.println(ex.getMessage());
 	    }
@@ -45,26 +46,29 @@ public class MovieServer {
 	            year = decimalFormat.parse(request[0]).intValue();
 	        }
 	        catch (ParseException e) {
-	            System.out.println("Dozarino Testerino");
+	            System.out.println("NO NUMBAH");
 	        }
 	        try {
-	            numMovies = decimalFormat.parse(request[1]).intValue();
+	            numMovies = decimalFormat.parse(request[1]).intValue(); //me rn
 	        }
 	        catch (ParseException e) {
-	            System.out.println("Dozarino Testerino");
+	            System.out.println("NO NUMBAHHJHAHAHHAIKDSFHASJDHFAJSDHFKAJSDF");
 	        }
 
 	        String movieJsonStr = fetchData(year);
 	        Movie[] movies = new Movie[numMovies];
 	        movies = parseData(movieJsonStr, numMovies);
 	        for (Movie movie : movies) {
-	          outputLine += movie;
+	          outputLine += movie.toString();
 	        }
 	        out.println(outputLine);
+
 	      }
+
 	    } catch (IOException ex) {
 	      System.out.println(ex.getMessage());
 	    }
+
 	  }
 
 	  public static String fetchData(int year) {

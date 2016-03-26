@@ -1,9 +1,7 @@
-
 package pa7;
 
 public class Movie {
-
-    private String title, releaseDate, overview;
+	private String title, releaseDate, overview;
 
     Movie(){
         title = "";
@@ -26,6 +24,6 @@ public class Movie {
         return overview;
     }
     public String toString() {
-        return "Title: " + getTitle() + "\nRelease Date: " getReleaseDate() + "\nOverview: " + getOverview();
+        return "Title: " + getTitle() + "\nRelease Date: " + getReleaseDate() + "\nOverview: " + getOverview() + "\n\n";
     }
 }
