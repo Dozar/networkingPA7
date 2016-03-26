@@ -8,14 +8,13 @@ import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
-public class MovieServer {
+public class MovieServer{
 
   public static void main(String[] args) {
     System.out.println("Movie Server ...");
@@ -40,9 +39,21 @@ public class MovieServer {
       while ((inputLine = br.readLine()) != null) {
         System.out.println("Client request: " + inputLine);
         String[] request = inputLine.split(",");
-
-        year = request[0]
-        numMovies = request[1];
+        
+        DecimalFormat decimalFormat = new DecimalFormat("#");
+        
+        try {
+            year = decimalFormat.parse(request[0]).intValue();
+        }
+        catch (ParseException e) {
+            System.out.println("Dozarino Testerino");
+        }
+        try {
+            numMovies = decimalFormat.parse(request[1]).intValue();
+        }
+        catch (ParseException e) {
+            System.out.println("Dozarino Testerino");
+        }
 
         String movieJsonStr = fetchData(year);
         Movie[] movies = new Movie[numMovies];
@@ -65,7 +76,7 @@ public class MovieServer {
     // Contain the raw JSON response from MovieDatabase API
     try {
       // Construct a URL for the MovieDatabase query
-      String sUrl = "http://api.themoviedb.org/3/discover/movie?primary_release_year=" + year +
+      String sUrl = "http://api.themoviedb.org/3/discover/movie?primary_release_year = " + year +
       "&sort_by=vote_average.desc&api_key=78d7b7955fd40b3e2db8a133e18459a2";
       URL url = new URL(sUrl);
       // Setup connection to MovieDatabase
@@ -95,7 +106,7 @@ public class MovieServer {
           System.out.println(e.getMessage());
         }
       }
-      System.out.println(forecastJsonStr);
+      System.out.println(movieJsonStr);
     }
     return movieJsonStr;
   }
@@ -120,6 +131,6 @@ public class MovieServer {
     } catch (JSONException e) {
       System.out.println(e.getMessage());
     }
-    return resultStrs;
+    return movies;
   }
 }
