@@ -32,7 +32,14 @@ public class MovieClient {
 							break;
 						}
 						out.println(inputLine);
-						String response = br.readLine();	//Loop until NULL encountered, response +=
+						
+						String response;
+						
+						while (true){
+							if (br.readLine() == null) break;
+							response += br.readLine();
+						}
+						
 						System.out.println("Server response: " + response);
 				}
 
