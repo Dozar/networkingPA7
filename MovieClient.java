@@ -32,9 +32,9 @@ public class MovieClient {
 							break;
 						}
 						out.println(inputLine);
-						String response = br.readLine();
+						String response = br.readLine();	//Loop until NULL encountered, response +=
 						System.out.println("Server response: " + response);
-					}
+				}
 
 			 } catch (IOException ex) {
 				 System.out.println(ex.getMessage());
