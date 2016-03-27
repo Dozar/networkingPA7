@@ -33,14 +33,18 @@ public class MovieClient {
 						}
 						out.println(inputLine);
 
-						String response = "", line = "";
-						while (true) {
-							line = br.readLine();
-							if (line == null) {
-								break;
-							}
-							response += line;
+						String line = "", response = "";
+
+						line = br.readLine();
+						String[] movies = line.split("`");
+						int i = 1;
+						for (String movie : movies) {
+							response += movie;
 							response += "\n";
+							if(i % 3 == 0){
+								response += "\n";
+							}
+							i++;
 						}
 
 						System.out.println("Server response:\n\n" + response);
