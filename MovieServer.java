@@ -46,13 +46,13 @@ public class MovieServer {
 					year = decimalFormat.parse(request[0]).intValue();
 				}
 				catch (ParseException e) {
-					System.out.println("NO NUMBAH");
+					System.out.println("Not a number");
 				}
 				try {
 					numMovies = decimalFormat.parse(request[1]).intValue(); //me rn
 				}
 				catch (ParseException e) {
-					System.out.println("NO NUMBAHHJHAHAHHAIKDSFHASJDHFAJSDHFKAJSDF");
+					System.out.println("Not a number");
 				}
 				
 				String movieJsonStr = fetchData(year);
