@@ -18,6 +18,7 @@ public class MovieServer {
 	public static void main(String[] args) {
 	    System.out.println("Movie Server ...");
 	    Socket sSocket = null;
+	    
 	    try {
 	      ServerSocket serverSocket = new ServerSocket(9000);
 	      System.out.println("Waiting for connection.....");
@@ -41,7 +42,6 @@ public class MovieServer {
 	        String[] request = inputLine.split(",");
 
 	        DecimalFormat decimalFormat = new DecimalFormat("#");
-
 	        try {
 	            year = decimalFormat.parse(request[0]).intValue();
 	        }
@@ -56,6 +56,7 @@ public class MovieServer {
 	        }
 
 	        String movieJsonStr = fetchData(year);
+	        
 	        Movie[] movies = new Movie[numMovies];
 	        movies = parseData(movieJsonStr, numMovies);
 
@@ -64,17 +65,14 @@ public class MovieServer {
 	          outputLine += movie.toString();
 	        }
 	        out.println(outputLine);
-
 	      }
 
 	    } catch (IOException ex) {
 	      System.out.println(ex.getMessage());
 	    }
+	}
 
-	  }
-
-	  public static String fetchData(int year) {
-
+	public static String fetchData(int year) {
 	    HttpURLConnection conn = null;
 	    BufferedReader reader = null;
 	    String movieJsonStr = null;
@@ -84,10 +82,12 @@ public class MovieServer {
 	      String sUrl = "http://api.themoviedb.org/3/discover/movie?primary_release_year=" + year +
 	      "&sort_by=popularity.desc&api_key=78d7b7955fd40b3e2db8a133e18459a2";
 	      URL url = new URL(sUrl);
+	      
 	      // Setup connection to MovieDatabase
 	      conn = (HttpURLConnection) url.openConnection();
 	      conn.setRequestMethod("GET");
 	      conn.connect();
+	      
 	      InputStream inputStream = conn.getInputStream();
 	      // Read the input stream
 	      // Place input stream into a buffered reader
@@ -114,10 +114,9 @@ public class MovieServer {
 	      System.out.println(movieJsonStr);
 	    }
 	    return movieJsonStr;
-	  }
+	}
 
-	  public static Movie[] parseData(String movieJsonStr, int numMovies) {
-
+	public static Movie[] parseData(String movieJsonStr, int numMovies) {
 	    Movie[] movies = new Movie[numMovies];
 	    try {
 	      JSONObject movieJson = new JSONObject(movieJsonStr);
@@ -137,5 +136,5 @@ public class MovieServer {
 	      System.out.println(e.getMessage());
 	    }
 	    return movies;
-	  }
+	}
 }
