@@ -37,16 +37,10 @@ public class MovieClient {
 					
 					line = br.readLine();
 					String[] movies = line.split("`");
-					int i = 1;
 					for (String movie : movies) {
 						response += movie;
 						response += "\n";
-						if(i % 3 == 0){
-							response += "\n";
-						}
-						i++;
 					}
-					
 					System.out.println("Server response:\n\n" + response);
 					}
 				scanner.close();
