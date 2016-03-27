@@ -24,6 +24,6 @@ public class Movie {
 		return overview;
 	}
 	public String toString() {
-		return "Title: " + getTitle() + "`Release Date: " + getReleaseDate() + "`Overview: " + getOverview() + "`";
+		return "Title: " + getTitle() + "`Release Date: " + getReleaseDate() + "`Overview: " + getOverview() + "``";
 	}
 }
