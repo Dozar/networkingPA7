@@ -1,6 +1,6 @@
-package pa7;
+package randomTacoGenerator;
 
-public class Movie {
+public class Taco{
 	private String title, releaseDate, overview;
 	
 	Movie(){
