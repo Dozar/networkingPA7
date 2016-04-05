@@ -1,14 +1,14 @@
-package randomTacoGenerator;
+package pa7;
 
-public class Taco{
+public class Movie{
 	private String title, releaseDate, overview;
 	
-	Taco(){
+	Movie(){
 		title = "";
 		releaseDate = "";
 		overview = "";
 	}
-	Taco(String titleInput, String releaseDateInput, String overviewInput){
+	Movie(String titleInput, String releaseDateInput, String overviewInput){
 		title = titleInput;
 		releaseDate = releaseDateInput;
 		overview = overviewInput;
